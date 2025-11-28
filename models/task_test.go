@@ -5,8 +5,9 @@ import (
 	"testing"
 )
 
-func TestAddTask(t *testing.T) {
-	task := AddTask("Learn go with tests")
+func TestCreateTask(t *testing.T) {
+	tasks := []Task{}
+	task := CreateTask("Learn go with tests", tasks)
 
 	if task.ID != 1 {
 		t.Errorf("Expected ID to be 1, got %d", task.ID)
