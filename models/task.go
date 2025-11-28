@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type TaskStatus string
 
@@ -18,11 +20,24 @@ type Task struct {
 	UpdatedAt   time.Time
 }
 
-func AddTask(description string) Task {
+func CreateTask(description string, tasks []Task) Task {
+	taskID := nextID(tasks)
+
 	return Task{
-		ID:          2,
+		ID:          taskID,
 		Description: description,
 		Status:      TaskStatusTodo,
 		CreatedAt:   time.Now(),
 	}
+}
+
+func nextID(tasks []Task) int {
+	maxID := 0
+	for _, t := range tasks {
+		if t.ID > maxID {
+			maxID = t.ID
+		}
+	}
+
+	return maxID + 1
 }
