@@ -78,6 +78,99 @@ func TestStorageUpdate(t *testing.T) {
 	assertTaskEqual(t, loadedTasks[0], want)
 }
 
+func TestStorageDelete(t *testing.T) {
+	testDeleteFile := "test_delete.json"
+	t.Cleanup(func() { os.Remove(testDeleteFile) })
+
+	store := New(testDeleteFile)
+
+	store.Add("Should be deleted")
+
+	err := store.Delete(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	loadedTasks, err := store.Load()
+	want := []models.Task{}
+
+	if err != nil {
+		t.Errorf("failed to load %s", testDeleteFile)
+	}
+	if len(loadedTasks) != 0 {
+		t.Errorf("Task not deleted got %q, want %q", loadedTasks, want)
+	}
+}
+
+func TestStorageMarkInProgress(t *testing.T) {
+	testMarkFile := "test_mark_in_progres.json"
+	t.Cleanup(func() { os.Remove(testMarkFile) })
+
+	store := New(testMarkFile)
+
+	store.Add("Should be Marked In-progress")
+
+	err := store.MarkInProgress(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	loadedTasks, err := store.Load()
+	if err != nil {
+		t.Error("failed to load file")
+	}
+
+	if loadedTasks[0].Status != models.TaskStatusInProgress {
+		t.Errorf("Status mismatch: got %s, want %s", loadedTasks[0].Status, models.TaskStatusInProgress)
+	}
+}
+
+func TestStorageMarkDone(t *testing.T) {
+	testMarkFile := "test_mark_done.json"
+	t.Cleanup(func() { os.Remove(testMarkFile) })
+
+	store := New(testMarkFile)
+
+	store.Add("Should be Marked done")
+
+	err := store.MarkDone(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	loadedTasks, err := store.Load()
+	if err != nil {
+		t.Error("failed to load file")
+	}
+
+	if loadedTasks[0].Status != models.TaskStatusDone {
+		t.Errorf("Status mismatch: got %s, want %s", loadedTasks[0].Status, models.TaskStatusInProgress)
+	}
+}
+
+func TestStorageMarkTodo(t *testing.T) {
+	testMarkFile := "test_mark_todo.json"
+	t.Cleanup(func() { os.Remove(testMarkFile) })
+
+	store := New(testMarkFile)
+
+	store.Add("Should be Marked Todo")
+
+	err := store.MarkTodo(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	loadedTasks, err := store.Load()
+	if err != nil {
+		t.Error("failed to load file")
+	}
+
+	if loadedTasks[0].Status != models.TaskStatusTodo {
+		t.Errorf("Status mismatch: got %s, want %s", loadedTasks[0].Status, models.TaskStatusInProgress)
+	}
+}
+
 func TestSaveAndLoadTasks(t *testing.T) {
 	testSaveAndLoadFile := "test_save_and_load.json"
 
@@ -116,8 +209,8 @@ func TestStorageUpdateNonExistent(t *testing.T) {
 
 	// Try to update task that doesn't exist
 	err := store.Update(999, "Ghost task")
-	if err != nil {
-		t.Error("Update Failed:", err)
+	if err == nil {
+		t.Error("Update happend on non existent")
 	}
 	// What do you EXPECT to happen?
 	// Write your expectations here before running the test!

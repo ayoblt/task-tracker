@@ -88,6 +88,109 @@ func (s *Storage) Update(ID int, description string) error {
 	return s.Save(newTasksList)
 }
 
+func (s *Storage) Delete(ID int) error {
+	found := false
+	tasks, err := s.Load()
+	if err != nil {
+		return err
+	}
+
+	var newTasksList []models.Task
+
+	for _, t := range tasks {
+		if t.ID == ID {
+			found = true
+			continue
+		} else {
+			newTasksList = append(newTasksList, t)
+		}
+	}
+
+	if !found {
+		return errors.New("Task with ID: " + strconv.Itoa(ID) + " not found")
+	}
+
+	return s.Save(newTasksList)
+}
+
+func (s *Storage) MarkInProgress(ID int) error {
+	found := false
+	tasks, err := s.Load()
+	if err != nil {
+		return err
+	}
+
+	var newTasksList []models.Task
+
+	for _, t := range tasks {
+		if t.ID == ID {
+			found = true
+			t.Status = models.TaskStatusInProgress
+			newTasksList = append(newTasksList, t)
+		} else {
+			newTasksList = append(newTasksList, t)
+		}
+	}
+
+	if !found {
+		return errors.New("Task with ID: " + strconv.Itoa(ID) + " not found")
+	}
+
+	return s.Save(newTasksList)
+}
+
+func (s *Storage) MarkDone(ID int) error {
+	found := false
+	tasks, err := s.Load()
+	if err != nil {
+		return err
+	}
+
+	var newTasksList []models.Task
+
+	for _, t := range tasks {
+		if t.ID == ID {
+			found = true
+			t.Status = models.TaskStatusDone
+			newTasksList = append(newTasksList, t)
+		} else {
+			newTasksList = append(newTasksList, t)
+		}
+	}
+
+	if !found {
+		return errors.New("Task with ID: " + strconv.Itoa(ID) + " not found")
+	}
+
+	return s.Save(newTasksList)
+}
+
+func (s *Storage) MarkTodo(ID int) error {
+	found := false
+	tasks, err := s.Load()
+	if err != nil {
+		return err
+	}
+
+	var newTasksList []models.Task
+
+	for _, t := range tasks {
+		if t.ID == ID {
+			found = true
+			t.Status = models.TaskStatusTodo
+			newTasksList = append(newTasksList, t)
+		} else {
+			newTasksList = append(newTasksList, t)
+		}
+	}
+
+	if !found {
+		return errors.New("Task with ID: " + strconv.Itoa(ID) + " not found")
+	}
+
+	return s.Save(newTasksList)
+}
+
 func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
